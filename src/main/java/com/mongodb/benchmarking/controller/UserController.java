@@ -2,6 +2,8 @@ package com.mongodb.benchmarking.controller;
 
 import com.mongodb.benchmarking.entity.User;
 import com.mongodb.benchmarking.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +25,16 @@ public class UserController {
     @PostMapping(value = "/users")
     public ResponseEntity postUsers() throws InterruptedException {
         RestTemplate restTemplate = new RestTemplate();
-        for(int i = 0; i<250; i++) {
+        for(int i = 0; i<200; i++) {
             Thread.sleep(2000);
             ResponseEntity<User[]> response = restTemplate.getForEntity("https://my.api.mockaroo.com/user-address-cars.json?key=2477e480", User[].class);
             User[] users = response.getBody();
-            userService.saveAllUser(Arrays.asList(users));
+            try{
+                userService.saveAllUser(Arrays.asList(users));
+            } catch (Exception e){
+                e.getMessage();
+            }
+
         }
         return (ResponseEntity) ResponseEntity.status(HttpStatus.OK);
     }
